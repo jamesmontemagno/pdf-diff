@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   PDFDropZone,
   DiffView,
@@ -7,13 +7,17 @@ import {
   PrivacyFeatures,
   ViewModeTabs,
   PageSelector,
+  ThemeToggle,
+  ExportButton,
 } from './components';
-import type { ViewMode } from './components';
+import type { ViewMode, Theme } from './components';
 import { extractTextFromPDF } from './utils/pdfUtils';
 import type { PDFDocument } from './utils/pdfUtils';
 import { computeTextDiff, computeStats } from './utils/diffUtils';
 import type { DiffPart } from './utils/diffUtils';
+import { exportDiffToPDF } from './utils/exportUtils';
 import './App.css';
+import pdfIcon from '/pdf-icon.svg';
 
 function App() {
   const [originalFile, setOriginalFile] = useState<File | null>(null);
@@ -24,6 +28,15 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('side-by-side');
   const [currentPage, setCurrentPage] = useState(1);
+  const [theme, setTheme] = useState<Theme>(() => {
+    const savedTheme = localStorage.getItem('pdf-diff-theme') as Theme;
+    return savedTheme || 'system';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('pdf-diff-theme', theme);
+  }, [theme]);
 
   const handleOriginalFile = useCallback(async (file: File) => {
     setOriginalFile(file);
@@ -83,16 +96,27 @@ function App() {
     };
   }, [originalDoc, modifiedDoc, currentPage]);
 
+  const handleExport = useCallback(() => {
+    if (!originalDoc || !modifiedDoc) return;
+    
+    exportDiffToPDF(originalDoc, modifiedDoc);
+  }, [originalDoc, modifiedDoc]);
+
   const showComparison = originalDoc && modifiedDoc && diffParts;
 
   return (
     <div className="app">
       <header className="app-header">
-        <div className="logo-section">
-          <img src="/pdf-icon.svg" alt="PDF Diff" className="logo-icon" />
-          <h1>PDF Diff</h1>
+        <div className="header-top">
+          <div className="logo-section">
+            <div>
+              <img src={pdfIcon} alt="PDF Diff" className="logo-icon" />
+              <h1>PDF Diff</h1>
+            </div>
+            <p className="tagline">Compare PDFs privately and securely in your browser</p>
+          </div>
+          <ThemeToggle theme={theme} onThemeChange={setTheme} />
         </div>
-        <p className="tagline">Compare PDFs privately and securely in your browser</p>
       </header>
 
       <main className="app-main">
@@ -147,7 +171,10 @@ function App() {
           <section className="comparison-section">
             <div className="comparison-header">
               <h2>Comparison Results</h2>
-              <ViewModeTabs activeMode={viewMode} onModeChange={setViewMode} />
+              <div className="comparison-actions">
+                <ViewModeTabs activeMode={viewMode} onModeChange={setViewMode} />
+                <ExportButton onClick={handleExport} disabled={!diffParts} />
+              </div>
             </div>
 
             {stats && <DiffStats {...stats} />}

@@ -3,7 +3,7 @@ import './DiffView.css';
 
 interface DiffViewProps {
   parts: DiffPart[];
-  mode: 'side-by-side' | 'unified' | 'additions' | 'removals';
+  mode: 'side-by-side' | 'unified' | 'additions' | 'removals' | 'changes-only';
   originalText?: string;
   modifiedText?: string;
 }
@@ -89,6 +89,52 @@ export function DiffView({ parts, mode, originalText, modifiedText }: DiffViewPr
               {part.value}
             </div>
           ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (mode === 'changes-only') {
+    const additionParts = parts.filter(part => part.added);
+    const removalParts = parts.filter(part => part.removed);
+    
+    if (additionParts.length === 0 && removalParts.length === 0) {
+      return (
+        <div className="diff-view empty">
+          <p>No changes found</p>
+        </div>
+      );
+    }
+    
+    return (
+      <div className="diff-view changes-split">
+        <div className="changes-panel additions-panel">
+          <h4 className="panel-header additions-header">Additions ({additionParts.length})</h4>
+          <div className="diff-content">
+            {additionParts.length > 0 ? (
+              additionParts.map((part, index) => (
+                <div key={index} className="diff-block diff-added">
+                  {part.value}
+                </div>
+              ))
+            ) : (
+              <p className="empty-message">No additions</p>
+            )}
+          </div>
+        </div>
+        <div className="changes-panel removals-panel">
+          <h4 className="panel-header removals-header">Removals ({removalParts.length})</h4>
+          <div className="diff-content">
+            {removalParts.length > 0 ? (
+              removalParts.map((part, index) => (
+                <div key={index} className="diff-block diff-removed">
+                  {part.value}
+                </div>
+              ))
+            ) : (
+              <p className="empty-message">No removals</p>
+            )}
+          </div>
         </div>
       </div>
     );

@@ -25,9 +25,25 @@ export async function extractTextFromPDF(file: File): Promise<PDFDocument> {
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const textContent = await page.getTextContent();
+    
+    // Preserve line breaks by checking Y positions
+    let lastY = -1;
     const text = textContent.items
-      .map((item) => ('str' in item ? item.str : ''))
-      .join(' ');
+      .map((item, index) => {
+        if (!('str' in item)) return '';
+        
+        const currentY = item.transform[5];
+        const needsNewline = lastY !== -1 && Math.abs(currentY - lastY) > 5;
+        lastY = currentY;
+        
+        const nextItem = textContent.items[index + 1];
+        const needsSpace = nextItem && 'str' in nextItem && 
+          nextItem.transform[4] - (item.transform[4] + item.width) > 2;
+        
+        return (needsNewline ? '\n' : '') + item.str + (needsSpace ? ' ' : '');
+      })
+      .join('');
+    
     pages.push({ pageNumber: i, text });
   }
 

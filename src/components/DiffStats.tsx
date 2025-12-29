@@ -2,14 +2,16 @@ import './DiffStats.css';
 
 interface DiffStatsProps {
   additions: number;
-  removals: number;
+  deletions: number;
   unchanged: number;
+  totalChanges: number;
+  changePercentage: number;
 }
 
-export function DiffStats({ additions, removals, unchanged }: DiffStatsProps) {
-  const total = additions + removals + unchanged;
+export function DiffStats({ additions, deletions, unchanged }: DiffStatsProps) {
+  const total = additions + deletions + unchanged;
   const additionPercent = total > 0 ? (additions / total) * 100 : 0;
-  const removalPercent = total > 0 ? (removals / total) * 100 : 0;
+  const deletionPercent = total > 0 ? (deletions / total) * 100 : 0;
 
   return (
     <div className="diff-stats">
@@ -23,7 +25,7 @@ export function DiffStats({ additions, removals, unchanged }: DiffStatsProps) {
       <div className="stat-item removals">
         <div className="stat-icon">−</div>
         <div className="stat-info">
-          <span className="stat-value">{removals}</span>
+          <span className="stat-value">{deletions}</span>
           <span className="stat-label">words removed</span>
         </div>
       </div>
@@ -42,8 +44,8 @@ export function DiffStats({ additions, removals, unchanged }: DiffStatsProps) {
         />
         <div 
           className="stat-bar-segment removals" 
-          style={{ width: `${removalPercent}%` }}
-          title={`${removals} removals`}
+          style={{ width: `${deletionPercent}%` }}
+          title={`${deletions} deletions`}
         />
       </div>
     </div>

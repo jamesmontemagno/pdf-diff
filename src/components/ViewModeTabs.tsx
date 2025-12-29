@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import './ViewModeTabs.css';
 
-export type ViewMode = 'side-by-side' | 'unified' | 'additions' | 'removals';
+export type ViewMode = 'side-by-side' | 'unified' | 'additions' | 'removals' | 'changes-only';
 
 interface ViewModeTabsProps {
   activeMode: ViewMode;
@@ -51,6 +51,21 @@ export function ViewModeTabs({ activeMode, onModeChange }: ViewModeTabsProps) {
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
           <line x1="8" y1="12" x2="16" y2="12"></line>
+        </svg>
+      ),
+    },
+    {
+      mode: 'changes-only',
+      label: 'Changes Only',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M16 3h5v5"></path>
+          <path d="M8 3H3v5"></path>
+          <path d="M12 22v-7"></path>
+          <path d="m16 16 5 5"></path>
+          <path d="m16 21 5-5"></path>
+          <path d="m8 16-5 5"></path>
+          <path d="m8 21-5-5"></path>
         </svg>
       ),
     },
