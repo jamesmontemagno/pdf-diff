@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   PDFDropZone,
   DiffView,
-  DiffStats,
+  DiffStats as DiffStatsComponent,
   PrivacyBanner,
   PrivacyFeatures,
   ViewModeTabs,
@@ -14,10 +14,18 @@ import type { ViewMode, Theme } from './components';
 import { extractTextFromPDF } from './utils/pdfUtils';
 import type { PDFDocument } from './utils/pdfUtils';
 import { computeTextDiff, computeStats } from './utils/diffUtils';
-import type { DiffPart } from './utils/diffUtils';
+import type { DiffPart, DiffStats } from './utils/diffUtils';
 import { exportDiffToPDF } from './utils/exportUtils';
 import './App.css';
 import pdfIcon from '/pdf-icon.svg';
+
+interface PageDiffResult {
+  pageNumber: number;
+  parts: DiffPart[];
+  originalText: string;
+  modifiedText: string;
+  stats: DiffStats;
+}
 
 function App() {
   const [originalFile, setOriginalFile] = useState<File | null>(null);
@@ -28,6 +36,7 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('side-by-side');
   const [currentPage, setCurrentPage] = useState(1);
+  const [showAllPages, setShowAllPages] = useState(false);
   const [theme, setTheme] = useState<Theme>(() => {
     const savedTheme = localStorage.getItem('pdf-diff-theme') as Theme;
     return savedTheme || 'system';
@@ -75,26 +84,78 @@ function App() {
     setCurrentPage(1);
   }, []);
 
-  const { diffParts, stats, totalPages } = useMemo(() => {
+  const { diffParts, stats, totalPages, allPagesDiffs } = useMemo(() => {
     if (!originalDoc || !modifiedDoc) {
-      return { diffParts: null, stats: null, totalPages: 0 };
+      return { diffParts: null, stats: null, totalPages: 0, allPagesDiffs: null };
     }
 
     const maxPages = Math.max(originalDoc.totalPages, modifiedDoc.totalPages);
-    const pageIndex = currentPage - 1;
     
-    const originalText = originalDoc.pages[pageIndex]?.text || '';
-    const modifiedText = modifiedDoc.pages[pageIndex]?.text || '';
+    console.log('Computing diffs - showAllPages:', showAllPages, 'maxPages:', maxPages);
     
-    const parts = computeTextDiff(originalText, modifiedText);
-    const diffStats = computeStats(parts);
+    if (showAllPages) {
+      // Compute diffs for all pages
+      const allDiffs: PageDiffResult[] = [];
+      const allStats: DiffStats[] = [];
+      
+      for (let i = 0; i < maxPages; i++) {
+        const originalText = originalDoc.pages[i]?.text || '';
+        const modifiedText = modifiedDoc.pages[i]?.text || '';
+        const parts = computeTextDiff(originalText, modifiedText);
+        const pageStats = computeStats(parts);
+        
+        allDiffs.push({
+          pageNumber: i + 1,
+          parts,
+          originalText,
+          modifiedText,
+          stats: pageStats
+        });
+        allStats.push(pageStats);
+      }
+      
+      // Combine stats from all pages
+      const combined = allStats.reduce((acc, s) => ({
+        additions: acc.additions + s.additions,
+        deletions: acc.deletions + s.deletions,
+        unchanged: acc.unchanged + s.unchanged,
+        totalChanges: acc.totalChanges + s.totalChanges,
+        changePercentage: 0
+      }), {
+        additions: 0,
+        deletions: 0,
+        unchanged: 0,
+        totalChanges: 0,
+        changePercentage: 0
+      });
+      
+      const totalWords = combined.additions + combined.deletions + combined.unchanged;
+      combined.changePercentage = totalWords > 0 ? (combined.totalChanges / totalWords) * 100 : 0;
+      
+      console.log('All pages mode - allDiffs length:', allDiffs.length);
+      
+      return {
+        diffParts: null,
+        stats: combined,
+        totalPages: maxPages,
+        allPagesDiffs: allDiffs
+      };
+    } else {
+      // Single page mode
+      const pageIndex = currentPage - 1;
+      const originalText = originalDoc.pages[pageIndex]?.text || '';
+      const modifiedText = modifiedDoc.pages[pageIndex]?.text || '';
+      const parts = computeTextDiff(originalText, modifiedText);
+      const diffStats = computeStats(parts);
 
-    return {
-      diffParts: parts,
-      stats: diffStats,
-      totalPages: maxPages,
-    };
-  }, [originalDoc, modifiedDoc, currentPage]);
+      return {
+        diffParts: parts,
+        stats: diffStats,
+        totalPages: maxPages,
+        allPagesDiffs: null as PageDiffResult[] | null
+      };
+    }
+  }, [originalDoc, modifiedDoc, currentPage, showAllPages]);
 
   const handleExport = useCallback(() => {
     if (!originalDoc || !modifiedDoc) return;
@@ -102,7 +163,7 @@ function App() {
     exportDiffToPDF(originalDoc, modifiedDoc);
   }, [originalDoc, modifiedDoc]);
 
-  const showComparison = originalDoc && modifiedDoc && diffParts;
+  const showComparison = originalDoc && modifiedDoc && (diffParts || allPagesDiffs);
 
   return (
     <div className="app">
@@ -167,32 +228,84 @@ function App() {
           </div>
         )}
 
+        {(() => {
+          console.log('About to check showComparison:', {
+            originalDoc: !!originalDoc,
+            modifiedDoc: !!modifiedDoc,
+            diffParts: !!diffParts,
+            allPagesDiffs: !!allPagesDiffs,
+            allPagesDiffsLength: allPagesDiffs?.length,
+            showComparison: !!(originalDoc && modifiedDoc && (diffParts || allPagesDiffs))
+          });
+          return null;
+        })()}
+
         {showComparison && (
           <section className="comparison-section">
             <div className="comparison-header">
               <h2>Comparison Results</h2>
               <div className="comparison-actions">
                 <ViewModeTabs activeMode={viewMode} onModeChange={setViewMode} />
-                <ExportButton onClick={handleExport} disabled={!diffParts} />
+                <ExportButton onClick={handleExport} disabled={!originalDoc || !modifiedDoc} />
               </div>
             </div>
 
-            {stats && <DiffStats {...stats} />}
+            {stats && <DiffStatsComponent {...stats} />}
 
             {totalPages > 1 && (
-              <PageSelector
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-              />
+              <div className="page-controls">
+                <PageSelector
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                  disabled={showAllPages}
+                />
+                <label className="show-all-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={showAllPages}
+                    onChange={(e) => setShowAllPages(e.target.checked)}
+                  />
+                  <span>Show all pages</span>
+                </label>
+              </div>
             )}
 
-            <DiffView
-              parts={diffParts as DiffPart[]}
-              mode={viewMode}
-              originalText={originalDoc?.pages[currentPage - 1]?.text || ''}
-              modifiedText={modifiedDoc?.pages[currentPage - 1]?.text || ''}
-            />
+            {showAllPages ? (
+              allPagesDiffs ? (
+                <>
+                  {console.log('Rendering all pages, count:', allPagesDiffs.length)}
+                  <div className="all-pages-view">
+                    {allPagesDiffs.map(({ pageNumber, parts, originalText, modifiedText, stats: pageStats }) => (
+                    <div key={pageNumber} className="page-section">
+                      <div className="page-section-header">
+                        <h3>Page {pageNumber}</h3>
+                        <div className="page-stats">
+                          <span className="stat-badge additions">+{pageStats.additions}</span>
+                          <span className="stat-badge deletions">-{pageStats.deletions}</span>
+                        </div>
+                      </div>
+                      <DiffView
+                        parts={parts}
+                        mode={viewMode}
+                        originalText={originalText}
+                        modifiedText={modifiedText}
+                      />
+                    </div>
+                    ))}
+                  </div>
+                </>
+              ) : null
+            ) : (
+              diffParts && (
+                <DiffView
+                  parts={diffParts}
+                  mode={viewMode}
+                  originalText={originalDoc?.pages[currentPage - 1]?.text || ''}
+                  modifiedText={modifiedDoc?.pages[currentPage - 1]?.text || ''}
+                />
+              )
+            )}
           </section>
         )}
 

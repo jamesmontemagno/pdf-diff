@@ -4,15 +4,16 @@ interface PageSelectorProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  disabled?: boolean;
 }
 
-export function PageSelector({ currentPage, totalPages, onPageChange }: PageSelectorProps) {
+export function PageSelector({ currentPage, totalPages, onPageChange, disabled }: PageSelectorProps) {
   return (
     <div className="page-selector">
       <button
         className="page-btn"
         onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage <= 1}
+        disabled={disabled || currentPage === 1}
         aria-label="Previous page"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -25,7 +26,7 @@ export function PageSelector({ currentPage, totalPages, onPageChange }: PageSele
       <button
         className="page-btn"
         onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage >= totalPages}
+        disabled={disabled || currentPage === totalPages}
         aria-label="Next page"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
