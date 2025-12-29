@@ -91,8 +91,6 @@ function App() {
 
     const maxPages = Math.max(originalDoc.totalPages, modifiedDoc.totalPages);
     
-    console.log('Computing diffs - showAllPages:', showAllPages, 'maxPages:', maxPages);
-    
     if (showAllPages) {
       // Compute diffs for all pages
       const allDiffs: PageDiffResult[] = [];
@@ -131,8 +129,6 @@ function App() {
       
       const totalWords = combined.additions + combined.deletions + combined.unchanged;
       combined.changePercentage = totalWords > 0 ? (combined.totalChanges / totalWords) * 100 : 0;
-      
-      console.log('All pages mode - allDiffs length:', allDiffs.length);
       
       return {
         diffParts: null,
@@ -228,18 +224,6 @@ function App() {
           </div>
         )}
 
-        {(() => {
-          console.log('About to check showComparison:', {
-            originalDoc: !!originalDoc,
-            modifiedDoc: !!modifiedDoc,
-            diffParts: !!diffParts,
-            allPagesDiffs: !!allPagesDiffs,
-            allPagesDiffsLength: allPagesDiffs?.length,
-            showComparison: !!(originalDoc && modifiedDoc && (diffParts || allPagesDiffs))
-          });
-          return null;
-        })()}
-
         {showComparison && (
           <section className="comparison-section">
             <div className="comparison-header">
@@ -273,10 +257,8 @@ function App() {
 
             {showAllPages ? (
               allPagesDiffs ? (
-                <>
-                  {console.log('Rendering all pages, count:', allPagesDiffs.length)}
-                  <div className="all-pages-view">
-                    {allPagesDiffs.map(({ pageNumber, parts, originalText, modifiedText, stats: pageStats }) => (
+                <div className="all-pages-view">
+                  {allPagesDiffs.map(({ pageNumber, parts, originalText, modifiedText, stats: pageStats }) => (
                     <div key={pageNumber} className="page-section">
                       <div className="page-section-header">
                         <h3>Page {pageNumber}</h3>
@@ -294,8 +276,7 @@ function App() {
                     </div>
                     ))}
                   </div>
-                </>
-              ) : null
+                ) : null
             ) : (
               diffParts && (
                 <DiffView

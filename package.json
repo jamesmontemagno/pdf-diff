@@ -1,7 +1,16 @@
 {
   "name": "pdf-diff",
-  "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Compare PDF documents privately and securely in your browser. No uploads, no servers, just local processing.",
+  "keywords": ["pdf", "diff", "compare", "comparison", "document", "privacy", "secure", "client-side"],
+  "homepage": "https://www.pdf-diff.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jamesmontemagno/pdf-diff"
+  },
+  "author": "James Montemagno",
+  "license": "MIT",
+  "private": false,
   "type": "module",
   "scripts": {
     "dev": "vite",

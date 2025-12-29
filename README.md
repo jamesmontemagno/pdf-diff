@@ -1,39 +1,62 @@
 # PDF Diff
 
-A private and secure PDF comparison tool that runs entirely in your browser.
+> 🔒 Compare PDF documents privately and securely in your browser. No uploads, no servers, 100% client-side processing.
+
+[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://www.pdf-diff.com)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/jamesmontemagno/pdf-diff)](https://github.com/jamesmontemagno/pdf-diff/stargazers)
 
 ![PDF Diff Screenshot](https://github.com/user-attachments/assets/25448695-50dc-4b62-b6e0-3cb0d506774a)
 
-## Features
+**[Try it now at www.pdf-diff.com →](https://www.pdf-diff.com)**
 
-- **🔒 100% Private & Secure** - Your PDFs never leave your device. All processing happens locally in your browser.
-- **📄 Side-by-Side Comparison** - View changes highlighted in both documents side by side.
-- **➕ Additions View** - See only what was added in the modified document.
-- **➖ Removals View** - See only what was removed from the original document.
-- **📊 Unified View** - See all changes in a single, inline view.
-- **📈 Statistics** - Get a quick overview of additions, removals, and unchanged content.
-- **📱 Responsive Design** - Works on desktop and mobile devices.
-- **🌙 Dark/Light Mode** - Automatically adapts to your system preferences.
+## ✨ Features
 
-## Why Choose PDF Diff?
+### 🔐 Privacy-First Design
+- **100% Private & Secure** - Your PDFs never leave your device
+- **No Server Uploads** - Zero data transmission, zero risk
+- **Works Offline** - Once loaded, no internet connection required
+- **Open Source** - Inspect the code yourself to verify our privacy claims
 
-- **No Server Uploads** - Your documents are never sent to any server. Zero data transmission means zero risk.
-- **Browser-Based Processing** - All PDF parsing and comparison happens entirely within your browser using JavaScript.
-- **Works Offline** - Once loaded, the app works completely offline. No internet connection required.
-- **Open Source** - Our code is open source. Inspect it yourself to verify our privacy claims.
+### 📊 Powerful Comparison Views
+- **Side-by-Side View** - Compare documents with synchronized scrolling
+- **Unified View** - See all changes inline with color coding
+- **Additions Only** - View only what was added
+- **Removals Only** - View only what was removed
+- **Changes Only** - See additions and removals side-by-side per page
 
-## Getting Started
+### 🎯 Advanced Features
+- **Multi-Page Support** - Compare entire documents page by page
+- **Show All Pages** - View all changes across all pages at once
+- **Export to PDF** - Save comparison results as a formatted PDF report
+- **Page Navigation** - Quick navigation between pages
+- **Statistics Dashboard** - Get instant insights on changes
+- **Dark/Light/System Theme** - Choose your preferred appearance
+
+### 📱 User Experience
+- **Responsive Design** - Works perfectly on desktop, tablet, and mobile
+- **Drag & Drop** - Easy file upload with drag and drop support
+- **Real-time Processing** - Instant comparison results
+- **Clean Interface** - Intuitive and clutter-free design
+
+## 🚀 Getting Started
 
 ### Using the App
 
-1. Visit [https://jamesmontemagno.github.io/pdf-diff/](https://jamesmontemagno.github.io/pdf-diff/)
-2. Drop or select your original PDF
-3. Drop or select your modified PDF
-4. View the comparison results
+1. Visit **[www.pdf-diff.com](https://www.pdf-diff.com)**
+2. Upload or drag your **original PDF**
+3. Upload or drag your **modified PDF**
+4. View comparison results instantly
+5. Switch between view modes as needed
+6. Export results to PDF if desired
 
 ### Development
 
 ```bash
+# Clone the repository
+git clone https://github.com/jamesmontemagno/pdf-diff.git
+cd pdf-diff
+
 # Install dependencies
 npm install
 
@@ -50,14 +73,50 @@ npm run preview
 npm run lint
 ```
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-- [React](https://react.dev/) - UI Framework
-- [TypeScript](https://www.typescriptlang.org/) - Type Safety
-- [Vite](https://vite.dev/) - Build Tool
-- [PDF.js](https://mozilla.github.io/pdf.js/) - PDF Parsing
-- [diff](https://github.com/kpdecker/jsdiff) - Text Comparison
+- **[React 19](https://react.dev/)** - Modern UI framework
+- **[TypeScript](https://www.typescriptlang.org/)** - Type-safe development
+- **[Vite](https://vite.dev/)** - Lightning-fast build tool
+- **[PDF.js](https://mozilla.github.io/pdf.js/)** - Mozilla's PDF rendering engine
+- **[jsPDF](https://github.com/parallax/jsPDF)** - PDF generation for exports
+- **[diff](https://github.com/kpdecker/jsdiff)** - Text comparison algorithm
 
-## License
+## 🎨 Color Coding
+
+- 🟢 **Green** - Additions (new content)
+- 🔴 **Red** - Deletions (removed content)  
+- ⚪ **White/Gray** - Unchanged content
+
+## 🔒 Privacy & Security
+
+PDF Diff is built with privacy as the top priority:
+
+1. **No Server Communication** - Files are processed entirely in your browser
+2. **No Data Storage** - Nothing is saved or cached
+3. **No Tracking** - No analytics or user tracking (except standard web analytics)
+4. **No Third-Party APIs** - All processing happens locally
+5. **Open Source** - Full transparency, audit the code yourself
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
 
 MIT License - See [LICENSE](LICENSE) for details.
+
+## 👨‍💻 Author
+
+**James Montemagno**
+- Website: [montemagno.com](https://montemagno.com)
+- GitHub: [@jamesmontemagno](https://github.com/jamesmontemagno)
+- Twitter: [@JamesMontemagno](https://twitter.com/JamesMontemagno)
+
+## 🌟 Show Your Support
+
+Give a ⭐️ if this project helped you!
+
+---
+
+**[Start comparing PDFs now →](https://www.pdf-diff.com)**

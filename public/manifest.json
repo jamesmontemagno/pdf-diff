@@ -1,0 +1,21 @@
+{
+  "name": "PDF Diff - Compare PDFs Privately & Securely",
+  "short_name": "PDF Diff",
+  "description": "Compare PDF documents privately and securely in your browser. No uploads, no servers, just local processing.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0f0f",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/pdf-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["utilities", "productivity", "business"],
+  "screenshots": [],
+  "shortcuts": []
+}
