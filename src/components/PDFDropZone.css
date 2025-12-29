@@ -1,0 +1,86 @@
+.pdf-dropzone {
+  border: 2px dashed var(--border-color, #4b5563);
+  border-radius: 12px;
+  padding: 2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: var(--dropzone-bg, rgba(255, 255, 255, 0.02));
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pdf-dropzone:hover:not(.disabled) {
+  border-color: var(--primary-color, #6366f1);
+  background: var(--dropzone-hover-bg, rgba(99, 102, 241, 0.1));
+}
+
+.pdf-dropzone.has-file {
+  border-color: var(--success-color, #22c55e);
+  border-style: solid;
+  background: var(--dropzone-success-bg, rgba(34, 197, 94, 0.1));
+}
+
+.pdf-dropzone.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pdf-dropzone input[type="file"] {
+  display: none;
+}
+
+.pdf-dropzone label {
+  cursor: pointer;
+  width: 100%;
+}
+
+.pdf-dropzone.disabled label {
+  cursor: not-allowed;
+}
+
+.dropzone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.dropzone-icon {
+  color: var(--text-muted, #9ca3af);
+  transition: color 0.2s ease;
+}
+
+.pdf-dropzone:hover:not(.disabled) .dropzone-icon {
+  color: var(--primary-color, #6366f1);
+}
+
+.pdf-dropzone.has-file .dropzone-icon {
+  color: var(--success-color, #22c55e);
+}
+
+.dropzone-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dropzone-label {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--text-primary, #f3f4f6);
+}
+
+.dropzone-filename {
+  font-size: 0.9rem;
+  color: var(--success-color, #22c55e);
+  word-break: break-all;
+  max-width: 200px;
+}
+
+.dropzone-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted, #9ca3af);
+}

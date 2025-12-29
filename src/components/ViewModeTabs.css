@@ -1,0 +1,51 @@
+.view-mode-tabs {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: var(--bg-secondary, #1e1e1e);
+  border-radius: 12px;
+  flex-wrap: wrap;
+}
+
+.view-mode-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  background: transparent;
+  color: var(--text-muted, #9ca3af);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.view-mode-tab:hover {
+  background: var(--hover-bg, rgba(255, 255, 255, 0.05));
+  color: var(--text-primary, #f3f4f6);
+}
+
+.view-mode-tab.active {
+  background: var(--primary-color, #6366f1);
+  color: white;
+}
+
+.view-mode-tab svg {
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .view-mode-tabs {
+    justify-content: center;
+  }
+
+  .view-mode-tab span {
+    display: none;
+  }
+
+  .view-mode-tab {
+    padding: 0.75rem;
+  }
+}
