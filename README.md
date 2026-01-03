@@ -26,12 +26,14 @@
 - **Changes Only** - See additions and removals side-by-side per page
 
 ### 🎯 Advanced Features
+- **CLI Support** - Use via `npx pdf-diff` for command-line comparisons
 - **Multi-Page Support** - Compare entire documents page by page
 - **Show All Pages** - View all changes across all pages at once
 - **Export to PDF** - Save comparison results as a formatted PDF report
 - **Page Navigation** - Quick navigation between pages
 - **Statistics Dashboard** - Get instant insights on changes
 - **Dark/Light/System Theme** - Choose your preferred appearance
+- **Visual HTML/PDF Reports** - Generate shareable diff reports
 
 ### 📱 User Experience
 - **Responsive Design** - Works perfectly on desktop, tablet, and mobile
@@ -41,7 +43,41 @@
 
 ## 🚀 Getting Started
 
-### Using the App
+### Quick Start with CLI (npx)
+
+Compare PDFs directly from your terminal with zero installation:
+
+```bash
+# Basic comparison
+npx pdf-diff original.pdf modified.pdf
+
+# Generate only HTML report
+npx pdf-diff original.pdf modified.pdf --report html
+
+# CI-friendly: exit with code 1 if differences found
+npx pdf-diff original.pdf modified.pdf --fail-on-diff
+
+# Output as JSON for programmatic use
+npx pdf-diff original.pdf modified.pdf --format json
+
+# Interactive mode
+npx pdf-diff --interactive
+```
+
+#### CLI Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `-r, --report <type>` | Report type: `html`, `pdf`, or `both` | `both` |
+| `-o, --out <dir>` | Output directory for reports | `./pdf-diff-report` |
+| `--open` / `--no-open` | Open HTML report in browser after completion | `--open` |
+| `-f, --format <type>` | Output format: `text`, `json`, or `junit` | `text` |
+| `--fail-on-diff` | Exit with code 1 if differences are found | - |
+| `-p, --pages <spec>` | Pages to compare (e.g., `1-3,5,7`) | All pages |
+| `-t, --threshold <float>` | Change percentage threshold for failure | - |
+| `-i, --interactive` | Interactive mode with guided prompts | - |
+
+### Using the Web App
 
 1. Visit **[www.pdf-diff.com](https://www.pdf-diff.com)**
 2. Upload or drag your **original PDF**
