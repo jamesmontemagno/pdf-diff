@@ -1,21 +1,48 @@
 # NPM Publishing Workflow
 #
-# This workflow publishes the pdf-diff CLI package to npm.
+# This workflow publishes the pdf-diff CLI package to npm using OIDC trusted publishing.
 # 
-# Required Secrets:
-# -----------------
-# 1. NPM_TOKEN: Your npm authentication token
-#    - Go to https://www.npmjs.com/settings/YOUR_USERNAME/tokens
-#    - Click "Generate New Token" > "Classic Token"
-#    - Select "Automation" type for CI/CD usage
-#    - Copy the token and add it as a GitHub secret named NPM_TOKEN
+# SETUP REQUIRED - npm Trusted Publishing (OIDC):
+# -----------------------------------------------
+# npm now requires OIDC trusted publishing or Granular Access Tokens (classic tokens are revoked).
+# OIDC is recommended as it requires no secrets and is more secure.
 #
-# To add the secret:
-# 1. Go to your GitHub repository
-# 2. Click Settings > Secrets and variables > Actions
-# 3. Click "New repository secret"
-# 4. Name: NPM_TOKEN
-# 5. Value: paste your npm token
+# To enable OIDC trusted publishing:
+# 1. Go to https://www.npmjs.com/package/@jamesmontemagno/pdf-diff/access
+#    (You need to publish the package once first, see "First-time setup" below)
+# 2. Click "Add a publishing configuration"
+# 3. Select "GitHub Actions" as the provider
+# 4. Enter:
+#    - Repository: jamesmontemagno/pdf-diff
+#    - Workflow filename: publish-npm.yml
+#    - Environment: (leave empty or use 'npm' if you create one)
+# 5. Save the configuration
+#
+# First-time setup (before OIDC):
+# -------------------------------
+# For the FIRST publish only, you need a Granular Access Token:
+# 1. Go to https://www.npmjs.com/settings/jamesmontemagno/tokens
+# 2. Click "Generate New Token" > "Granular Access Token"
+# 3. Set:
+#    - Token name: pdf-diff-initial-publish
+#    - Expiration: 7 days (shortest available)
+#    - Packages: Select packages > @jamesmontemagno/pdf-diff
+#    - Permissions: Read and write
+# 4. Add as GitHub secret: NPM_TOKEN
+# 5. Run this workflow once with dry_run=false
+# 6. After successful publish, set up OIDC (above) and remove the NPM_TOKEN secret
+#
+# Alternative - Granular Access Token (if OIDC not desired):
+# ----------------------------------------------------------
+# 1. Go to https://www.npmjs.com/settings/jamesmontemagno/tokens
+# 2. Click "Generate New Token" > "Granular Access Token"
+# 3. Set:
+#    - Token name: pdf-diff-github-actions
+#    - Expiration: 90 days (maximum)
+#    - Packages: Select packages > @jamesmontemagno/pdf-diff
+#    - Permissions: Read and write
+# 4. Add as GitHub secret: NPM_TOKEN
+# 5. Set a reminder to rotate the token every 90 days
 #
 # Triggering a Release:
 # --------------------
@@ -51,8 +78,8 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      id-token: write
+      contents: write
+      id-token: write  # Required for npm OIDC trusted publishing
     
     steps:
       - name: Checkout
@@ -80,10 +107,12 @@ jobs:
 
       - name: Publish to npm (dry run)
         if: ${{ github.event.inputs.dry_run == 'true' }}
-        run: npm publish --dry-run
+        run: npm publish --dry-run --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      # Publish with OIDC provenance (preferred - no token needed once configured)
+      # Falls back to NPM_TOKEN if OIDC is not yet configured
       - name: Publish to npm
         if: ${{ github.event.inputs.dry_run != 'true' }}
         run: npm publish --provenance --access public
@@ -92,7 +121,7 @@ jobs:
 
       - name: Create GitHub Release
         if: ${{ github.event.inputs.dry_run != 'true' && startsWith(github.ref, 'refs/tags/') }}
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
           body: |
@@ -107,5 +136,3 @@ jobs:
             ```
             
             See the [CLI documentation](https://www.pdf-diff.com/cli.html) for full usage instructions.
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
