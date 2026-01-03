@@ -3,6 +3,21 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: ['main']
+    paths:
+      # Web app source files
+      - 'src/**'
+      - '!src/cli/**'  # Exclude CLI-only changes
+      # Web app configuration
+      - 'index.html'
+      - 'vite.config.ts'
+      - 'tsconfig.json'
+      - 'tsconfig.app.json'
+      - 'tsconfig.node.json'
+      # Static assets
+      - 'public/**'
+      # Dependencies (may affect build)
+      - 'package.json'
+      - 'package-lock.json'
   workflow_dispatch:
 
 permissions:

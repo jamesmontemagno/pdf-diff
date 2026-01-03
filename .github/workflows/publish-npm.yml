@@ -66,6 +66,8 @@ on:
   push:
     tags:
       - 'v*'
+    # Note: Path filters don't work with tags - tag pushes always trigger regardless of paths.
+    # The tag itself indicates intent to publish a new version.
   workflow_dispatch:
     inputs:
       dry_run:
