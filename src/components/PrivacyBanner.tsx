@@ -42,6 +42,17 @@ export function PrivacyFeatures() {
     {
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="4 17 10 11 4 5"></polyline>
+          <line x1="12" y1="19" x2="20" y2="19"></line>
+        </svg>
+      ),
+      title: 'CLI Available',
+      description: 'Use pdf-diff from your terminal with npx. Perfect for CI/CD pipelines.',
+      link: '/cli.html',
+    },
+    {
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
           <line x1="2" y1="12" x2="22" y2="12"></line>
           <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
@@ -68,10 +79,21 @@ export function PrivacyFeatures() {
       <h2 className="privacy-features-title">Why Choose PDF Diff?</h2>
       <div className="privacy-features-grid">
         {features.map((feature, index) => (
-          <div key={index} className="privacy-feature">
-            <div className="feature-icon">{feature.icon}</div>
-            <h3 className="feature-title">{feature.title}</h3>
-            <p className="feature-description">{feature.description}</p>
+          <div key={index} className={`privacy-feature${feature.link ? ' privacy-feature-link' : ''}`}>
+            {feature.link ? (
+              <a href={feature.link} className="feature-link-wrapper">
+                <div className="feature-icon">{feature.icon}</div>
+                <h3 className="feature-title">{feature.title}</h3>
+                <p className="feature-description">{feature.description}</p>
+                <span className="feature-learn-more">Learn more →</span>
+              </a>
+            ) : (
+              <>
+                <div className="feature-icon">{feature.icon}</div>
+                <h3 className="feature-title">{feature.title}</h3>
+                <p className="feature-description">{feature.description}</p>
+              </>
+            )}
           </div>
         ))}
       </div>

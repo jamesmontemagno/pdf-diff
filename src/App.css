@@ -407,6 +407,20 @@
   border-top: 1px solid rgba(107, 114, 128, 0.2);
   text-align: center;
   display: block;
+  line-height: 1.5;
+}
+
+.app-footer .footer-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.app-footer .footer-links a {
+  margin-left: 0;
 }
 
 @media (max-width: 768px) {

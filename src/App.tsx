@@ -343,11 +343,21 @@ function App() {
 
       <footer className="app-footer">
         <p>
-          Made with ❤️ for privacy-conscious users.
-          <a href="https://github.com/jamesmontemagno/pdf-diff" target="_blank" rel="noopener noreferrer">
-            View on GitHub
-          </a>
+          Made with ❤️ for privacy-conscious users
         </p>
+        <div className="footer-links">
+          <a href="https://github.com/jamesmontemagno/pdf-diff" target="_blank" rel="noopener noreferrer">
+            GitHub
+          </a>
+          <span>·</span>
+          <a href="/cli.html">
+            CLI Docs
+          </a>
+          <span>·</span>
+          <a href="https://www.npmjs.com/package/@jamesmontemagno/pdf-diff" target="_blank" rel="noopener noreferrer">
+            npm
+          </a>
+        </div>
         <p className="adsense-disclosure">
           This site uses Google AdSense for ads, which may collect browsing data and use cookies for personalization.
           Your PDFs are never uploaded or shared—all comparison happens locally in your browser.

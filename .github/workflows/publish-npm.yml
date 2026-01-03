@@ -1,0 +1,111 @@
+# NPM Publishing Workflow
+#
+# This workflow publishes the pdf-diff CLI package to npm.
+# 
+# Required Secrets:
+# -----------------
+# 1. NPM_TOKEN: Your npm authentication token
+#    - Go to https://www.npmjs.com/settings/YOUR_USERNAME/tokens
+#    - Click "Generate New Token" > "Classic Token"
+#    - Select "Automation" type for CI/CD usage
+#    - Copy the token and add it as a GitHub secret named NPM_TOKEN
+#
+# To add the secret:
+# 1. Go to your GitHub repository
+# 2. Click Settings > Secrets and variables > Actions
+# 3. Click "New repository secret"
+# 4. Name: NPM_TOKEN
+# 5. Value: paste your npm token
+#
+# Triggering a Release:
+# --------------------
+# This workflow runs when you:
+# 1. Push a tag starting with 'v' (e.g., v1.0.0, v1.2.3)
+#    git tag v1.0.0
+#    git push origin v1.0.0
+#
+# 2. Manually trigger via GitHub Actions UI (workflow_dispatch)
+#
+# Before Publishing:
+# -----------------
+# 1. Update version in package.json
+# 2. Update CHANGELOG if you have one
+# 3. Commit changes
+# 4. Create and push a tag
+
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (do not publish)'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build CLI
+        run: npm run build:cli
+
+      - name: Verify CLI build
+        run: |
+          echo "Checking CLI build output..."
+          ls -la dist-cli/
+          echo "Testing CLI help..."
+          node dist-cli/cli.mjs --help
+
+      - name: Publish to npm (dry run)
+        if: ${{ github.event.inputs.dry_run == 'true' }}
+        run: npm publish --dry-run
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish to npm
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        if: ${{ github.event.inputs.dry_run != 'true' && startsWith(github.ref, 'refs/tags/') }}
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+          body: |
+            ## Installation
+            
+            ```bash
+            # Use directly with npx
+            npx @jamesmontemagno/pdf-diff original.pdf modified.pdf
+            
+            # Or install globally
+            npm install -g @jamesmontemagno/pdf-diff
+            ```
+            
+            See the [CLI documentation](https://www.pdf-diff.com/cli.html) for full usage instructions.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

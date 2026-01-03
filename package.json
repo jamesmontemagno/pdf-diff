@@ -1,5 +1,5 @@
 {
-  "name": "pdf-diff",
+  "name": "@jamesmontemagno/pdf-diff",
   "version": "1.0.0",
   "description": "Compare PDF documents privately and securely in your browser. No uploads, no servers, just local processing.",
   "keywords": [
@@ -29,6 +29,9 @@
   "files": [
     "dist-cli"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

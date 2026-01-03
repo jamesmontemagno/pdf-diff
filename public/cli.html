@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF Diff CLI - Command Line PDF Comparison Tool</title>
+  <meta name="description" content="Compare PDF documents from the command line with pdf-diff CLI. Generate HTML and PDF reports, CI-friendly, zero install via npx.">
+  <meta name="keywords" content="pdf diff cli, pdf compare command line, pdf comparison tool, npx pdf-diff, ci pdf comparison">
+  <link rel="icon" type="image/svg+xml" href="/pdf-icon.svg">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="PDF Diff CLI - Command Line PDF Comparison Tool">
+  <meta property="og:description" content="Compare PDF documents from the command line. Generate visual HTML/PDF reports. CI-friendly with npx support.">
+  <meta property="og:url" content="https://www.pdf-diff.com/cli.html">
+  <meta property="og:type" content="website">
+  
+  <style>
+    :root {
+      --bg-primary: #0f0f0f;
+      --bg-secondary: #1a1a1a;
+      --bg-tertiary: #252525;
+      --text-primary: #f3f4f6;
+      --text-secondary: #d1d5db;
+      --text-muted: #9ca3af;
+      --primary-color: #6366f1;
+      --primary-hover: #818cf8;
+      --success-color: #22c55e;
+      --danger-color: #ef4444;
+      --warning-color: #f59e0b;
+      --border-color: #374151;
+      --code-bg: #1e1e1e;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    /* Header */
+    header {
+      text-align: center;
+      padding: 3rem 2rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .logo-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      margin-bottom: 1rem;
+    }
+    
+    .logo-link img {
+      width: 48px;
+      height: 48px;
+    }
+    
+    .logo-link h1 {
+      font-size: 2rem;
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    header h2 {
+      font-size: 1.75rem;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+    
+    .badge {
+      display: inline-block;
+      background: var(--primary-color);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-top: 1rem;
+    }
+    
+    /* Navigation */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--primary-color);
+      text-decoration: none;
+      padding: 1rem 0;
+    }
+    
+    .back-link:hover {
+      text-decoration: underline;
+    }
+    
+    /* Sections */
+    section {
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    section:last-of-type {
+      border-bottom: none;
+    }
+    
+    h3 {
+      font-size: 1.5rem;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    h3 .icon {
+      color: var(--primary-color);
+    }
+    
+    h4 {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      margin: 1.5rem 0 0.75rem;
+    }
+    
+    p {
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+    }
+    
+    /* Code blocks */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+      position: relative;
+    }
+    
+    code {
+      font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+    }
+    
+    .code-comment {
+      color: #6b7280;
+    }
+    
+    .code-command {
+      color: #22c55e;
+    }
+    
+    .code-flag {
+      color: #f59e0b;
+    }
+    
+    .code-string {
+      color: #60a5fa;
+    }
+    
+    /* Inline code */
+    p code, li code, td code {
+      background: var(--bg-tertiary);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+    
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+    
+    th, td {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border-color);
+    }
+    
+    th {
+      background: var(--bg-secondary);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    td {
+      color: var(--text-secondary);
+    }
+    
+    tr:nth-child(even) {
+      background: var(--bg-secondary);
+    }
+    
+    /* Lists */
+    ul, ol {
+      margin: 1rem 0;
+      padding-left: 1.5rem;
+      color: var(--text-secondary);
+    }
+    
+    li {
+      margin: 0.5rem 0;
+    }
+    
+    /* Feature cards */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    
+    .feature-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    
+    .feature-card h4 {
+      color: var(--text-primary);
+      margin: 0 0 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .feature-card h4 .icon {
+      color: var(--success-color);
+    }
+    
+    .feature-card p {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+    
+    /* Install box */
+    .install-box {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      margin: 2rem 0;
+    }
+    
+    .install-box h3 {
+      justify-content: center;
+      margin-bottom: 0.5rem;
+    }
+    
+    .install-box pre {
+      display: inline-block;
+      margin: 1rem 0;
+      font-size: 1.1rem;
+    }
+    
+    .install-box .note {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    
+    /* Alert boxes */
+    .alert {
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+    
+    .alert-info {
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: var(--primary-hover);
+    }
+    
+    .alert-warning {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: var(--warning-color);
+    }
+    
+    .alert-success {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: var(--success-color);
+    }
+    
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    
+    footer a {
+      color: var(--primary-color);
+      text-decoration: none;
+    }
+    
+    footer a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Responsive */
+    @media (max-width: 640px) {
+      .container {
+        padding: 1rem;
+      }
+      
+      header {
+        padding: 2rem 1rem;
+      }
+      
+      h3 {
+        font-size: 1.25rem;
+      }
+      
+      pre {
+        font-size: 0.8rem;
+      }
+      
+      table {
+        font-size: 0.85rem;
+      }
+      
+      th, td {
+        padding: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back-link">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      Back to PDF Diff
+    </a>
+  </div>
+  
+  <header>
+    <a href="/" class="logo-link">
+      <img src="/pdf-icon.svg" alt="PDF Diff">
+      <h1>PDF Diff</h1>
+    </a>
+    <h2>Command Line Interface</h2>
+    <p>Compare PDF documents from your terminal with zero install</p>
+    <span class="badge">npx ready</span>
+  </header>
+  
+  <main class="container">
+    <!-- Quick Start -->
+    <section>
+      <div class="install-box">
+        <h3>
+          <span class="icon">⚡</span>
+          Quick Start
+        </h3>
+        <p>Run directly with npx - no installation required!</p>
+        <pre><code><span class="code-command">npx</span> <span class="code-string">@jamesmontemagno/pdf-diff</span> original.pdf modified.pdf</code></pre>
+        <p class="note">Requires Node.js 18 or later</p>
+      </div>
+    </section>
+    
+    <!-- Installation -->
+    <section>
+      <h3>
+        <span class="icon">📦</span>
+        Installation
+      </h3>
+      
+      <h4>Option 1: Use directly with npx (recommended)</h4>
+      <pre><code><span class="code-comment"># No installation needed - runs the latest version</span>
+<span class="code-command">npx</span> <span class="code-string">@jamesmontemagno/pdf-diff</span> file1.pdf file2.pdf</code></pre>
+      
+      <h4>Option 2: Global installation</h4>
+      <pre><code><span class="code-comment"># Install globally</span>
+<span class="code-command">npm</span> install -g <span class="code-string">@jamesmontemagno/pdf-diff</span>
+
+<span class="code-comment"># Then use anywhere</span>
+<span class="code-command">pdf-diff</span> file1.pdf file2.pdf</code></pre>
+      
+      <h4>Option 3: Project dependency</h4>
+      <pre><code><span class="code-comment"># Add to your project</span>
+<span class="code-command">npm</span> install --save-dev <span class="code-string">@jamesmontemagno/pdf-diff</span>
+
+<span class="code-comment"># Use in package.json scripts</span>
+<span class="code-string">"scripts"</span>: {
+  <span class="code-string">"diff-pdfs"</span>: <span class="code-string">"pdf-diff docs/v1.pdf docs/v2.pdf"</span>
+}</code></pre>
+    </section>
+    
+    <!-- Features -->
+    <section>
+      <h3>
+        <span class="icon">✨</span>
+        Features
+      </h3>
+      
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h4><span class="icon">📄</span> Visual Reports</h4>
+          <p>Generate beautiful HTML and PDF reports showing all differences with syntax highlighting.</p>
+        </div>
+        <div class="feature-card">
+          <h4><span class="icon">🔄</span> CI/CD Ready</h4>
+          <p>Exit codes, JSON/JUnit output formats, and fail-on-diff flag for automated pipelines.</p>
+        </div>
+        <div class="feature-card">
+          <h4><span class="icon">🎯</span> Page Selection</h4>
+          <p>Compare specific pages only with flexible page range syntax.</p>
+        </div>
+        <div class="feature-card">
+          <h4><span class="icon">💬</span> Interactive Mode</h4>
+          <p>Guided prompts help you configure comparisons step by step.</p>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Usage Examples -->
+    <section>
+      <h3>
+        <span class="icon">💻</span>
+        Usage Examples
+      </h3>
+      
+      <h4>Basic comparison</h4>
+      <pre><code><span class="code-comment"># Compare two PDFs and generate HTML + PDF reports</span>
+<span class="code-command">npx</span> <span class="code-string">@jamesmontemagno/pdf-diff</span> original.pdf modified.pdf</code></pre>
+      
+      <h4>CI/CD pipeline</h4>
+      <pre><code><span class="code-comment"># Exit with code 1 if differences found, output as JSON</span>
+<span class="code-command">npx</span> <span class="code-string">@jamesmontemagno/pdf-diff</span> old.pdf new.pdf <span class="code-flag">--fail-on-diff</span> <span class="code-flag">--format</span> json</code></pre>
+      
+      <h4>Custom output directory</h4>
+      <pre><code><span class="code-comment"># Save reports to a specific folder</span>
+<span class="code-command">npx</span> <span class="code-string">@jamesmontemagno/pdf-diff</span> a.pdf b.pdf <span class="code-flag">--out</span> ./my-reports</code></pre>
+      
+      <h4>Compare specific pages</h4>
+      <pre><code><span class="code-comment"># Only compare pages 1-3 and page 5</span>
+<span class="code-command">npx</span> <span class="code-string">@jamesmontemagno/pdf-diff</span> a.pdf b.pdf <span class="code-flag">--pages</span> <span class="code-string">"1-3,5"</span></code></pre>
+      
+      <h4>HTML report only</h4>
+      <pre><code><span class="code-comment"># Generate only HTML report (faster)</span>
+<span class="code-command">npx</span> <span class="code-string">@jamesmontemagno/pdf-diff</span> a.pdf b.pdf <span class="code-flag">--report</span> html</code></pre>
+      
+      <h4>Interactive mode</h4>
+      <pre><code><span class="code-comment"># Launch guided prompts</span>
+<span class="code-command">npx</span> <span class="code-string">@jamesmontemagno/pdf-diff</span> <span class="code-flag">--interactive</span></code></pre>
+      
+      <h4>JUnit output for CI</h4>
+      <pre><code><span class="code-comment"># Output in JUnit XML format for test reporters</span>
+<span class="code-command">npx</span> <span class="code-string">@jamesmontemagno/pdf-diff</span> a.pdf b.pdf <span class="code-flag">--format</span> junit</code></pre>
+    </section>
+    
+    <!-- CLI Options -->
+    <section>
+      <h3>
+        <span class="icon">⚙️</span>
+        CLI Options
+      </h3>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Option</th>
+            <th>Description</th>
+            <th>Default</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>-r, --report &lt;type&gt;</code></td>
+            <td>Report type: <code>html</code>, <code>pdf</code>, or <code>both</code></td>
+            <td><code>both</code></td>
+          </tr>
+          <tr>
+            <td><code>-o, --out &lt;dir&gt;</code></td>
+            <td>Output directory for reports</td>
+            <td><code>./pdf-diff-report</code></td>
+          </tr>
+          <tr>
+            <td><code>--open</code></td>
+            <td>Open HTML report in browser after completion</td>
+            <td>enabled</td>
+          </tr>
+          <tr>
+            <td><code>--no-open</code></td>
+            <td>Don't open report in browser</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td><code>-f, --format &lt;type&gt;</code></td>
+            <td>Output format: <code>text</code>, <code>json</code>, or <code>junit</code></td>
+            <td><code>text</code></td>
+          </tr>
+          <tr>
+            <td><code>--fail-on-diff</code></td>
+            <td>Exit with code 1 if differences found</td>
+            <td>disabled</td>
+          </tr>
+          <tr>
+            <td><code>-p, --pages &lt;spec&gt;</code></td>
+            <td>Pages to compare (e.g., <code>1-3,5,7</code>)</td>
+            <td>all pages</td>
+          </tr>
+          <tr>
+            <td><code>-t, --threshold &lt;float&gt;</code></td>
+            <td>Change percentage threshold for failure</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td><code>-i, --interactive</code></td>
+            <td>Interactive mode with guided prompts</td>
+            <td>disabled</td>
+          </tr>
+          <tr>
+            <td><code>-V, --version</code></td>
+            <td>Display version number</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td><code>-h, --help</code></td>
+            <td>Display help information</td>
+            <td>-</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+    
+    <!-- Exit Codes -->
+    <section>
+      <h3>
+        <span class="icon">🚦</span>
+        Exit Codes
+      </h3>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>0</code></td>
+            <td>PDFs are identical (or differences below threshold)</td>
+          </tr>
+          <tr>
+            <td><code>1</code></td>
+            <td>PDFs have differences (when <code>--fail-on-diff</code> is used)</td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <div class="alert alert-info">
+        <strong>Tip:</strong> Use <code>--fail-on-diff</code> in CI pipelines to fail builds when document changes are detected.
+      </div>
+    </section>
+    
+    <!-- CI/CD Integration -->
+    <section>
+      <h3>
+        <span class="icon">🔄</span>
+        CI/CD Integration
+      </h3>
+      
+      <h4>GitHub Actions Example</h4>
+      <pre><code>name: PDF Comparison
+on: [push, pull_request]
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Compare PDFs
+        run: |
+          npx @jamesmontemagno/pdf-diff \
+            docs/expected.pdf \
+            docs/generated.pdf \
+            --fail-on-diff \
+            --format junit \
+            --out ./pdf-diff-results
+      
+      - name: Upload Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdf-diff-report
+          path: ./pdf-diff-results/</code></pre>
+    </section>
+    
+    <!-- Output Formats -->
+    <section>
+      <h3>
+        <span class="icon">📊</span>
+        Output Formats
+      </h3>
+      
+      <h4>Text (default)</h4>
+      <p>Human-readable summary with statistics printed to the terminal.</p>
+      
+      <h4>JSON</h4>
+      <p>Machine-readable output for programmatic processing:</p>
+      <pre><code>{
+  "summary": {
+    "originalFile": "original.pdf",
+    "modifiedFile": "modified.pdf",
+    "originalPages": 5,
+    "modifiedPages": 5
+  },
+  "statistics": {
+    "additions": 42,
+    "deletions": 15,
+    "unchanged": 230,
+    "changePercentage": 19.8
+  },
+  "pages": [
+    { "pageNumber": 1, "hasChanges": true },
+    { "pageNumber": 2, "hasChanges": false }
+  ]
+}</code></pre>
+      
+      <h4>JUnit XML</h4>
+      <p>Compatible with CI test reporters:</p>
+      <pre><code>&lt;testsuite name="PDF Diff" tests="5" failures="2"&gt;
+  &lt;testcase name="Page 1" classname="pdf-diff"&gt;
+    &lt;failure message="Page 1 has differences"/&gt;
+  &lt;/testcase&gt;
+  &lt;testcase name="Page 2" classname="pdf-diff"/&gt;
+&lt;/testsuite&gt;</code></pre>
+    </section>
+    
+    <!-- Requirements -->
+    <section>
+      <h3>
+        <span class="icon">📋</span>
+        Requirements
+      </h3>
+      
+      <ul>
+        <li><strong>Node.js 18+</strong> - Required for running the CLI</li>
+        <li><strong>Chromium</strong> - Automatically installed by Playwright for PDF report generation</li>
+      </ul>
+      
+      <div class="alert alert-warning">
+        <strong>Note:</strong> The first run may take a moment as Playwright downloads Chromium for PDF generation. Subsequent runs will be faster.
+      </div>
+    </section>
+    
+    <!-- Troubleshooting -->
+    <section>
+      <h3>
+        <span class="icon">🔧</span>
+        Troubleshooting
+      </h3>
+      
+      <h4>Browser installation issues</h4>
+      <p>If you see errors about browser installation, run:</p>
+      <pre><code><span class="code-command">npx</span> playwright install chromium</code></pre>
+      
+      <h4>Permission errors</h4>
+      <p>On Linux, you may need to install system dependencies:</p>
+      <pre><code><span class="code-command">npx</span> playwright install-deps chromium</code></pre>
+      
+      <h4>Skip PDF report generation</h4>
+      <p>If you only need the HTML report and want to skip Chromium:</p>
+      <pre><code><span class="code-command">npx</span> <span class="code-string">@jamesmontemagno/pdf-diff</span> a.pdf b.pdf <span class="code-flag">--report</span> html</code></pre>
+    </section>
+    
+    <!-- Source -->
+    <section>
+      <h3>
+        <span class="icon">📂</span>
+        Source Code
+      </h3>
+      
+      <p>PDF Diff is open source! View the code, report issues, or contribute on GitHub:</p>
+      
+      <p>
+        <a href="https://github.com/jamesmontemagno/pdf-diff" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color);">
+          github.com/jamesmontemagno/pdf-diff
+        </a>
+      </p>
+    </section>
+  </main>
+  
+  <footer>
+    <p>
+      Made with ❤️ by <a href="https://github.com/jamesmontemagno" target="_blank" rel="noopener noreferrer">James Montemagno</a>
+    </p>
+    <p style="margin-top: 0.5rem;">
+      <a href="/">Web App</a> · <a href="https://github.com/jamesmontemagno/pdf-diff" target="_blank" rel="noopener noreferrer">GitHub</a> · <a href="https://www.npmjs.com/package/@jamesmontemagno/pdf-diff" target="_blank" rel="noopener noreferrer">npm</a>
+    </p>
+  </footer>
+</body>
+</html>
