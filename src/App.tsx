@@ -358,10 +358,6 @@ function App() {
             npm
           </a>
         </div>
-        <p className="adsense-disclosure">
-          This site uses Google AdSense for ads, which may collect browsing data and use cookies for personalization.
-          Your PDFs are never uploaded or shared—all comparison happens locally in your browser.
-        </p>
       </footer>
     </div>
   );

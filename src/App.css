@@ -401,17 +401,6 @@
   text-decoration: underline;
 }
 
-.adsense-disclosure {
-  font-size: 0.8rem;
-  color: var(--text-muted, #6b7280);
-  max-width: 800px;
-  margin: 1rem auto 0 !important;
-  padding: 0.75rem 2rem 0;
-  border-top: 1px solid rgba(107, 114, 128, 0.2);
-  text-align: center;
-  line-height: 1.5;
-}
-
 .app-footer .footer-links {
   display: flex;
   justify-content: center;
